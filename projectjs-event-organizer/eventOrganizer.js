@@ -1,20 +1,26 @@
 console.log("Event organizer!\n\n");
 
 //constructor for clients
-function Person(fname,sname,sex,age) {
+function Person(fname,sname,sex,age,wallet) {
     this.fname=fname;
     this.sname=sname;
     this.sex=sex;
     this.age=age;
+    this.wallet=wallet;
+
+    //object property to count attendance of a client
+    this.numberOfEvents=0;
 }
 
 //object constructor for event
-function Event(id,name,onlyAdults,Clients,dateOfEvent) {
+function Event(id,name,onlyAdults,price,Clients,dateOfEvent) {
     this.id=id,
     this.name=name,
+    this.price=price;
     this.onlyAdults=onlyAdults 
     this.Clients=Clients;
     this.dateOfEvent=dateOfEvent
+    
 };
 
 //array to store events
@@ -22,7 +28,7 @@ var Events=[];
 
 
 //function to add events
-function addEvent(name,onlyAdults,dateOfEvent) {
+function addEvent(name,onlyAdults,price,dateOfEvent) {
 
 //check if event organizer is open      
 if(organizerEventsOpen) console.log("Event organizer is currently closed for events.");
@@ -34,15 +40,17 @@ else{
          console.log("Invalid operation. (Name of the event is required)"); 
          return;}
      else {
-        var newEvent = new Event(getId(),name,onlyAdults,[],dateOfEvent);
+         //set price to 0(free) if no price was given
+         if (price==undefined) price=0;
+        var newEvent = new Event(getId(),name,onlyAdults,price,[],dateOfEvent);
         pushEvent(newEvent); }
     }
 }
 
 //add events
-addEvent("Grand opening of new Club", true," 01/03/2018 ");
-addEvent("Casino Royale",true," 01/03/2019 ");
-addEvent("Student party",false,);
+addEvent("Grand opening of new Club", true,5," 01/03/2018 ");
+addEvent("Casino Royale",true,10," 01/03/2019 ");
+addEvent("Student party",false,10);
 addEvent("Bowling club opening");
 addEvent();
 
@@ -57,8 +65,12 @@ function pushEvent(newEvent) {
 }
 
 //function to show an event in particular way, extracted as new method for further use
+//added ability to use ! in front of names that are free and $ in front of those that aren't
 function prettyVisualization(i) {
-    console.log(Events[i].name+Events[i].dateOfEvent+" (Minors are "+(Events[i].onlyAdults ? "not allowed.)" : "allowed.)"));
+    var priceIndication;
+    if(Events[i].price==0) priceIndication="! ";
+    else priceIndication="$ ";
+    console.log(priceIndication+Events[i].name+Events[i].dateOfEvent+" (Minors are "+(Events[i].onlyAdults ? "not allowed.)" : "allowed.)"));
 }
 
 //function to show events
@@ -90,7 +102,7 @@ deleteEvent(1);
 showEvents();
 
 //function to edit event by id
-function editEvent(n,name,onlyAdults) {
+function editEvent(n,name,onlyAdults,price) {
     if(Events.length>=n) {
         if(name==undefined) {
         console.log("Name of the event is required.");
@@ -98,6 +110,11 @@ function editEvent(n,name,onlyAdults) {
         else{
         Events[n].name=name;
         Events[n].onlyAdults=onlyAdults; 
+        Events[n].price=price;
+
+           //if price not set, make it free(set price to 0)
+           if (price==undefined) price=0;
+           
         console.log("Changes applied successfully.");
           }
     }
@@ -111,29 +128,44 @@ editEvent(1);
 showEvents();
 
 //edit event, with name but without access provided => edited event (new name, access by default)
-editEvent(1,"New era Club anniversary");
+editEvent(1,"New era Club anniversary",undefined,10);
 showEvents();
 
-var p1=new Person ("Engin","Mustafa","M",20);
-var p2=new Person("Mustafa","Engin","M",15);
-var p3=new Person ("Ivana","Ivanova","F",19);
-var p4=new Person("Ivan","Georgiev","M",19);
+var p1=new Person ("Engin","Mustafa","M",20,50);
+var p2=new Person("Mustafa","Engin","M",15,100);
+var p3=new Person ("Ivana","Ivanova","F",19,25);
+var p4=new Person("Ivan","Georgiev","M",19,30);
 
-//add person for an event using id
+//add person to an event using id
 function addClientToEvent (n,Person) {
     //check whether event organizer is open
-    if(organizerClientsOpen) console.log("Event organizer is currently closed for clients.");
+    if(organizerClientsOpen) console.log("\nEvent organizer is currently closed for clients.");
     else {
-         //check if client is allowed at the party
+         //check if client is allowed at the party 
         if(Events[n].onlyAdults && Person.age<18) {
         console.log("This client is not allowed at "+Events[n].name);
         }
-
-         //if everything is fine => add the client 
-        else {
+        //If the client is VIP, dont charge him => register him to event, reset his status
+        else if (Person.numberOfEvents==5) {
+        console.log("\nThis person is VIP - he will not be charged.");
         Events[n].Clients.push(Person);
+        Person.numberOfEvents=0;
         }
+        //if everything is fine but the client is not VIP => add the client 
+        else checkWallet(n,Person);
     }
+}
+
+//function to check whether person has enough money for specific event, if so => extract it
+function checkWallet(n,Person) {
+    if(Person.wallet>=Events[n].price) {
+       Person.wallet-=Events[n].price;
+
+       //increase numberOfEvents every time a client is registered to an event
+       Person.numberOfEvents++;
+       Events[n].Clients.push(Person);
+    }
+    else console.log("This client does not have enough money for "+Events[n].name);
 }
 
 //client is minor => not allowed, message alert(terminated operation)
@@ -274,6 +306,28 @@ filterEventsByAgeRange("minors");
 
 console.log("\n...........*Additional tasks - Part 1* done!.............\n")
 
+//added price option to events
+console.log("\nPrice of "+Events[0].name+": "+Events[0].price);
+
+//try to add person without enough money for an event => error message;
+console.log("\n");
+var p5 = new Person("George","Michael","M",16,10);
+addEvent("VIP Antic Theatre",false,1000,"01/03/2019");
+addClientToEvent(3,p5);
+
+//try VIP client ability
+console.log("\n")
+var p6 = new Person("Billy","Russo","M",35,1200);
+addEvent("Skateboarding club anniversary",false,100,"04/04/2019");
+addEvent("NBA Basketball Match",false,5000,"01/06/2019");
+//register Billy Russo to all events
+for(var i=0;i<Events.length;i++) {
+    addClientToEvent(i,p6);
+    console.log("Number of events: "+p6.numberOfEvents);
+    console.log("Money left: "+p6.wallet);
+} // After the fifth event, he became VIP and was not charged for the sixth event, then his status was reset
+
+console.log("\n...........*Additional tasks - Part 2* done!.............\n")
 
 
 
