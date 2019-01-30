@@ -70,7 +70,7 @@ function prettyVisualization(i) {
     var priceIndication;
     if(Events[i].price==0) priceIndication="! ";
     else priceIndication="$ ";
-    console.log(priceIndication+Events[i].name+Events[i].dateOfEvent+" (Minors are "+(Events[i].onlyAdults ? "not allowed.)" : "allowed.)"));
+    console.log(priceIndication+Events[i].name+" "+Events[i].dateOfEvent+" (Minors are "+(Events[i].onlyAdults ? "not allowed.)" : "allowed.)"));
 }
 
 //function to show events
@@ -328,6 +328,80 @@ for(var i=0;i<Events.length;i++) {
 } // After the fifth event, he became VIP and was not charged for the sixth event, then his status was reset
 
 console.log("\n...........*Additional tasks - Part 2* done!.............\n")
+
+//variable to store archived events
+var archive=[];
+
+//function to archive an event by id
+function archiveEvent(n) {
+//add ~ to events name
+Events[n].name="~ "+Events[n].name;
+//archive event
+archive.push(Events[n]);
+//remove it from the register of actual events
+Events.splice(n,1);
+console.log("\nEvent with id = "+n+" succesfully archived.");
+}
+
+
+//archived event with id 0
+archiveEvent(0);
+
+//visualization of archived events
+function prettyArchiveVisualization(i) {
+    console.log(archive[i].name
+        +" "+archive[i].dateOfEvent
+        +" (Minors are "+(archive[i].onlyAdults ? "not allowed.)" : "allowed.)"));
+}
+
+//method to show archived events
+function showArchivedEvents() {
+    for(var i = 0;i<archive.length;i++) {
+        prettyArchiveVisualization(i);
+    }
+ }
+
+ //function to show events with cliets
+function showEventsWithClients (array,eventType) {
+    for(var i=0;i<array.length;i++) {
+        if(array[i].Clients.length>=1) {
+
+            //switch event type(use different visualization type for each,
+            //beacause they own different qualities)
+            switch(eventType) {
+                case "archive":
+                    prettyArchiveVisualization(i);
+                    break;
+                case "actual":
+                    prettyVisualization(i);
+                    break;        
+            }
+        }
+    }
+}
+
+//method to show archived events, all events or only the events that has clients
+function showAllEvents(n) {
+    switch (n) {
+        case "all": showEvents(); 
+                    showArchivedEvents(); 
+                    break;
+        case "archived": showArchivedEvents();
+                         break; 
+        case "clients": showEventsWithClients(Events,"actual"); 
+                        showEventsWithClients(archive,"archive");
+    }
+
+}
+
+addEvent("Computer Lab anniversary",true,10,"10/10/2019");
+console.log("\n---Show all events---\n\n");
+showAllEvents("all");
+console.log("\n---Show archived events---\n\n");
+showAllEvents("archived");
+console.log("\n---Show events with clients only---\n\n");
+showAllEvents("clients");
+
 
 
 
