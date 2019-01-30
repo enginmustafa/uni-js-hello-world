@@ -20,7 +20,9 @@ function Event(id,name,onlyAdults,price,Clients,dateOfEvent) {
     this.onlyAdults=onlyAdults 
     this.Clients=Clients;
     this.dateOfEvent=dateOfEvent
-    
+
+    this.clientsRating=[];
+    this.finalRate=0;
 };
 
 //array to store events
@@ -355,9 +357,16 @@ function prettyArchiveVisualization(i) {
 }
 
 //method to show archived events
+//method to show rating of event is added
 function showArchivedEvents() {
     for(var i = 0;i<archive.length;i++) {
+        var eventsRate;
         prettyArchiveVisualization(i);
+
+        //if event was not rated yet => meassage, else => show rating;
+        if(archive[i].finalRate==0) eventsRate="Upcoming actualization.";
+        else eventsRate=+archive[i].finalRate;
+        console.log(" |"+eventsRate+"| ");
     }
  }
 
@@ -401,6 +410,82 @@ console.log("\n---Show archived events---\n\n");
 showAllEvents("archived");
 console.log("\n---Show events with clients only---\n\n");
 showAllEvents("clients");
+
+//function to show the income that an archived event has generated
+function showIncome(n) {
+    console.log("\n"+archive[n].name+" has generated: "+(archive[n].price*archive[n].Clients.length)+" USD"+"\n");
+}
+
+//show income of event with id=0
+showIncome(0);
+
+//function to rate an archived event
+function rateEvent(event,rate,person) {
+    //control rating (It has to be from 1 to 10)
+    if(rate>10 || rate <1) console.log("Invalid rating. (1-10).");
+    else {
+         //variable to specify whether a person was on the list
+         var isClientRegistered=false;
+        for(var i=0;i<archive[event].Clients.length;i++){
+           if((person.fname+person.sname)==(archive[event].Clients[i].fname+archive[event].Clients[i].sname)){
+           archive[event].clientsRating.push(rate);
+           //if he is on the list, set flag to true
+           isClientRegistered=true;
+           console.log("\nClient: "+person.fname+" "+person.sname+" rated "+archive[event].name+" with clientsRating: "+rate) }
+        } //if flag is false(client doesnt appear on the list), terminate operation
+        if(!isClientRegistered) console.log("\nThis person isn't on the list of registrated clients of this event.");
+        }
+}
+
+//Add new event
+addEvent("VIP Football Match",false,40,"10/10/2019");
+
+//Add two clients to that event
+addClientToEvent(6,p1);
+addClientToEvent(6,p2);
+
+//Archive the event
+archiveEvent(6);
+
+//try to rate with a client who isnt on the list => error
+rateEvent(1,5,p3);
+
+//add clients that are registered to that client => successful
+rateEvent(1,5,p1);
+rateEvent(1,4,p2);
+
+//function to generate the final rating of event scale(1-6)
+function generateFinalRateOfEvent(n) {
+    var totalRate=0;
+    var numberOfClients=archive[n].clientsRating.length;
+
+    //sum up every rate that an event got
+    for(var i=0;i<numberOfClients;i++) {
+       totalRate+=archive[n].clientsRating[i];
+    }
+    
+    //divide summed rate by number of clients that rated to get an average rating 
+    //multiply that number by 100 and divide it by 10 to get what percententage of 10 is average rating given by clients
+    //divide average rating by 100 and multiply it by 10 to get FINAL RATING OF EVENT oN A SCLAE OF 1 TO 6
+    archive[n].finalRate=((((totalRate/numberOfClients)*100)/10)/100)*6;
+}
+ 
+//generate rate of event with id 1
+generateFinalRateOfEvent(1);
+
+//show all events, rating is visualized as well
+showAllEvents("archived");
+
+console.log("\n...........*Additional tasks - Part 3* done!.............\n")
+
+/*---------------------------------------------------------------------
+------------------------------PROJECT DONE----------------------------- 
+---------------------------------------------------------------------*/
+
+
+
+
+
 
 
 
