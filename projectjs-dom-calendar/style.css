@@ -1,0 +1,48 @@
+ul {list-style-type: none;}
+
+.month {
+    padding: 2%;
+    padding-bottom:1%;
+    background: hsla(120, 100%, 25%, 0.4);;
+    text-align: center;
+  }
+  .month ul li {
+    color: black;
+    font-size: 120%;
+    text-transform: uppercase;
+   }
+   .month #previous {
+    float: left;
+    padding-top:5%;
+    cursor: pointer;
+  }
+  .month #next {
+    padding-top:5%;
+    float: right;
+    cursor: pointer;
+  }
+  .month .year-nav {
+  cursor:pointer;
+  }
+  
+  .days {
+    padding:10px 0;  
+    padding-left:1%; 
+    background: hsla(120, 100%, 25%, 0.2);;;
+    margin: 0;
+  }
+  .days li {
+    border: 1px solid;
+    list-style-type: none;
+    display: inline-block;
+    width: 13.8%;
+    text-align: center;
+    padding-top:1%;
+    padding-bottom: 3%;
+    font-size:100%;
+    color: black;
+  }
+  .month #year {
+      color:#8b0000;
+      font-weight:bold;
+  }

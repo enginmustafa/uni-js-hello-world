@@ -5,9 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    
+        <div id="calendar" style="width:50%">
+                <div class="month">      
+                        <ul>
+                          <li onclick="previousMonth();" id="previous">⇦</li>
+                          <li onclick="nextMonth();" id="next">⇨</li>
+                          <li onclick="nextYear();" class ="year-nav"id="nextYear">⇧</li><br>
+                          <li>
+                            <span id="month">August</span>
+                            <span id="year">2017</span>
+                          </li>
+                          <br><li onclick="previousYear();"class="year-nav" id="previousYear">⇩</li>
+                        </ul>
+                      </div>    
+               <ul class="days" id="days-id"></ul>       
+        </div>
+
 
     <script src="myLibrary.js"></script>
     <script src="calendar.js"></script>
