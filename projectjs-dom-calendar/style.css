@@ -46,3 +46,36 @@ ul {list-style-type: none;}
       color:#8b0000;
       font-weight:bold;
   }
+  #datepicker-a {
+    float: right;
+  }
+.datepicker-form {
+  float:right;
+  }
+.datepicker-form input{
+width:25px;
+}
+.datepicker-form #input-submit {
+  width: 50px;
+}
+.nav-container {
+  display:none;
+}
+
+.days-datepicker {
+  padding:10px 0;  
+  padding-left:1%; 
+  background: #00ffbf;
+  margin: 0;
+}
+.days-datepicker li {
+  border: 1px solid red;
+  list-style-type: none;
+  display: inline-block;
+  width: 13.8%;
+  text-align: center;
+  padding-top:3%;
+  padding-bottom: 2%;
+  font-size:90%;
+  color: black;
+}

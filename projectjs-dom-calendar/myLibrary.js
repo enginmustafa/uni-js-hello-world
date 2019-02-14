@@ -1,21 +1,40 @@
 var myLibrary = {
 
 //pass object -> change html of it
-set : function(elem,edit) {
-        elem.innerHTML=edit;
+//if third parameter is given, set onlick
+set : function(elem,edit,o) {
+        if(o) {elem.setAttribute("onclick",edit) 
+        }
+        else {
+                elem.innerHTML+=edit;
+        }
+
 }       , 
 //get element by id
 get : function(id) {
     return document.getElementById(id);   
 },
-
-//add new element to another existing, if insert position isnt given, queue it 
-append : function (element1,element2,insertPosition) {
-    var newElement = document.createElement(element1);
-     var existingElement=this.get(element2);
-
-    existingElement.insertBefore(newElement,existingElement.childNodes[insertPosition]);
+//get elements by class name
+getS : function(classN) {
+        return document.getElementsByClassName(classN);
 },
+
+//add new element to another existing, if insert position isnt given, queue it (BY ID)
+append : function (getType,element1,element2,insertPosition) {
+    var newElement = document.createElement(element1);
+     var existingElement; 
+     if(getType=="id") { existingElement = this.get(element2);
+        existingElement.insertBefore(newElement,existingElement.childNodes[insertPosition]);
+     } 
+
+     else {existingElement=this.getS(element2);
+        for(var i=0;i<existingElement.length;i++) {
+        existingElement[i].insertBefore(newElement,existingElement[i].childNodes[insertPosition]);
+        }
+     } // goes collection ->make it one element if its with getS method
+
+},
+
 
 //delete element by id
 del : function (id) {
@@ -24,12 +43,18 @@ del : function (id) {
 },
 
 //pass object, set id to it
-setId : function(obj,id) {
-        obj.setAttribute("id",id);
+// if c is given, set class
+setId : function(obj,id,c) {
+        if(c) {
+                obj.setAttribute("class",id);
+        }
+        else {
+                obj.setAttribute("id",id);
+        }
 },
 
 //edit element by given id, edit exact attribute(editType)
-edit : function (id,editType,edit) {
+edit : function (id,editType,edit,unified) {
     switch(editType) {
         case "id": {
                 var element = this.get(id).setAttribute("id",edit);
@@ -54,7 +79,6 @@ edit : function (id,editType,edit) {
         case "html": {
                 this.get(id).innerHTML=edit;
                 break;
-
         }
 }
 },
