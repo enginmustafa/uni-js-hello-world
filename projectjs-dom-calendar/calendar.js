@@ -180,7 +180,87 @@ function datePickerChangeDay (arr,target) {
    }return arr;
 }
 
+//function to highlight the next weekdays
 
+function weekDaysPrettyVisualization() {
+
+    //this method returns number (0-6), 0=Sunday 6=Saturday
+    var thisDay = new Date().getDay();
+    var saturday,sunday;
+
+    //for further id giving
+    var dayIds=["saturday","sunday"];
+    switch(thisDay) {
+        //if thisDay == 0(Sunday) -> Next saturday is currentDay + 6 days away; Sunday is equal to Saturday-1
+        case 0:
+            saturday=currentDay+6;
+            sunday=saturday+1;
+            styleWeekdays(saturday-1,dayIds[0]);
+            styleWeekdays(sunday-1,dayIds[1]);
+            break;
+        case 1:
+            saturday=currentDay+5;
+            sunday=saturday+1;
+            styleWeekdays(saturday-1,dayIds[0]);
+            styleWeekdays(sunday-1,dayIds[1]);
+            break;
+        case 2:
+            saturday=currentDay+4;
+            sunday=saturday+1;
+            styleWeekdays(saturday-1,dayIds[0]);
+            styleWeekdays(sunday-1,dayIds[1]);
+            break;
+        case 3:
+            saturday=currentDay+3;
+            sunday=saturday+1;
+            styleWeekdays(saturday-1,dayIds[0]);
+            styleWeekdays(sunday-1,dayIds[1]);
+            break;
+        case 4:
+            saturday=currentDay+2;
+            sunday=saturday+1;
+            styleWeekdays(saturday-1,dayIds[0]);
+            styleWeekdays(sunday-1,dayIds[1]);
+            break;
+        case 5:
+            saturday=currentDay+1;
+            sunday=saturday+1;
+            styleWeekdays(saturday-1,dayIds[0]);
+            styleWeekdays(sunday-1,dayIds[1]);
+            break;
+
+        //If current day is saturday, make pretty only sunday    
+        case 6:
+            saturday=currentDay;
+            sunday=saturday+1;
+            styleWeekdays(sunday-1,dayIds[1]);
+            break;
+    }
+}
+
+//style weekdays
+function styleWeekdays(i,dayId) {
+            myLibrary.setId(myLibrary.getSibling("days-id","children")[i],dayId);
+            myLibrary.addStyles(dayId,{"background-color":"#FF00FF","color":"#ffe6e6"})
+    
+}
+
+//unstyle weekdays
+function weekDaysUglyVisualization() {
+    myLibrary.addStyles("saturday",{"background-color":"","color":"black"})
+    myLibrary.addStyles("sunday",{"background-color":"","color":"black"})
+}
+
+//position the buttons
+myLibrary.addStyles("week-days-visualize",{"position":"absolute","top":"0"});
+myLibrary.addStyles("week-days-unvisualize",{"position":"absolute","top":"0","left":"115px"});
+//set onclick event to button by id (when button is pressed, make weekdays pretty)
+myLibrary.set(myLibrary.get("week-days-visualize"),"weekDaysPrettyVisualization();",1);
+//set onclick event to button by id (when button is pressed, go back to normal visualization)
+myLibrary.set(myLibrary.get("week-days-unvisualize"),"weekDaysUglyVisualization();",1);
+
+
+//EVENTS TASK 
 /*
 //collection to store events
 var events=[];

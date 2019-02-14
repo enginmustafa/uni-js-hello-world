@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-        <div id="calendar" style="width:50%;">
+        <div id="calendar" style="width:50%; margin-top: 23px">
                 <div class="month">      
                         <ul>
                           <li onclick="previousMonth();" id="previous">⇦</li>
@@ -37,6 +37,8 @@
                 </li>
                 <ul class="days-datepicker" id="days-datepicker-id"></ul>
               </div>
+              <button id="week-days-visualize">Weekday style</button>
+              <button id="week-days-unvisualize">Normal style</button>
 
                <div class="nav-container" id="event-navigator">
                  <span>Clicked date:</span><span id="clicked-date"></span>

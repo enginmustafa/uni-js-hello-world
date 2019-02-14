@@ -86,6 +86,7 @@ edit : function (id,editType,edit,unified) {
 //function to edit style of an exact type
 editStyle : function (id,styleType,style) {
         this.get(id).style[styleType]=style;
+        console.log(this.get(id));
 },
 
 //function to add styles from object element
