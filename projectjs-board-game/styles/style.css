@@ -17,3 +17,21 @@ cursor: pointer;
     margin-left: 10px;
     font-size:30px;
 }
+#hero-placing-div {
+    float:left;
+}
+#hero-action-div {
+    display: none;
+    float:left;
+    padding: 10px;
+    margin-left:10px;
+    border: 1px solid red;
+}
+#players-turn {
+    font-size:30px;
+}
+#hero-action-div li {
+margin-left:10px;
+margin-top:10px;
+font-size:20px;
+}
