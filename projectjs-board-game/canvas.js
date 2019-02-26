@@ -3,146 +3,70 @@ var CanvasManager = {};
 CanvasManager.canvas=null;
 CanvasManager.context=null;
 
-CanvasManager.setCanCon = function(element) {
-    CanvasManager.canvas  = document.getElementById(element);
-    CanvasManager.context = CanvasManager.canvas.getContext('2d');
-}
+var selectionRects=[];
 
-var allShapes=[];
-var allShapesCopy=[];
-var shapeVariable=null;
-var clickedX=null;
-var clickedY=null;
+//store rectangle while drawing hero-selection-area
+var initialRect=null;
 var heroType=null;
 
+var hero=null;
+//store heroes
+var heroes=[];
 
-//flag for randomly choosing drawback place
-//(needed for randomness of placing drawback 
-//if there is not any[at least one should exist])
-//object storey row and coloumn of setback
-initialDrawbackPosition =  {
-    "x":getRandomNumber(3,5)-1,"y":getRandomNumber(1,9)-1
-}
+//variables to count heroes
+var k=0;
+var d=0;
+var e=0;
 
-function getRandomNumber (min,max) {
-    return Math.floor(Math.random() * (max - min + 1) ) + min;
-}
-
-function shapeVariableConstructor (bX,bY,bWidth,bHeight,bColor) {
+function initialRects (bX,bY,bWidth,bHeight,bColor) {
     this.bX=bX;
     this.bY=bY;
     this.bWidth=bWidth;
     this.bHeight=bHeight;
     this.bColor=bColor;
 }
-function pushShapeVariable (shapeVar,arr) {
 
-    //check if x isnt out of bonds    
-    if(shapeVar.bX<499) {
-        arr.push(shapeVar);
-    }
-}
-function unlucky  (blockX,blockY) {
-    //if not any drawback was put on the board
-    // & x & y parameters are equal
-    //place drawback to that position
-    if(Constants.drawbacks==5 && blockX == initialDrawbackPosition.x 
-       && blockY == initialDrawbackPosition.y) 
-       { Constants.drawbacks--; return true;}
-
-    //add drawback randomly
-     else {
-      if(getRandomNumber(1,20)==1) return true;
-      }
-} 
-function fillContext(arr) {
-    for(var i=0;i<arr.length;i++) {
-    CanvasManager.context.fillStyle=arr[i].bColor;
-    CanvasManager.context.fillRect(arr[i].bX,arr[i].bY,arr[i].bWidth,arr[i].bHeight);
-     }
- }   
-function copyArray (arr) {
-    return arr.slice();
-    }
-    
-function fillWithText(arr,startFrom,fillUntill) {
-        for(var i=startFrom;i<arr.length-fillUntill;i++) {
-        CanvasManager.context.font="30px Arial";
-        CanvasManager.context.fillStyle="black";
-        CanvasManager.context.fillText("X",arr[i].bX+20,arr[i].bY+40);
-        arr[i].bColor="red";
-        }
-}
-CanvasManager.unitPlacingView = function(player) {
-    var startingPosition;
-    var finishPosition;
-    if(player==2) {
-        startingPosition=0;
-        finishPosition=18;
-    }
-    else if(player==1) {
-        startingPosition=18;
-        finishPosition=0;
-    }
-    fillWithText(allShapesCopy,startingPosition,finishPosition);
-
-    CanvasManager.drawBoardS(allShapesCopy,startingPosition,finishPosition);
+function heroConstructor (bX,bY,bName) {
+    this.bX=bX;
+    this.bY=bY;
+    this.bWidth=55;
+    this.bHeight=55;
+    this.bColor="white";
+    this.bName=bName;
+    this.bType=getTypeOfHero(bName);
 }
 
-CanvasManager.drawBoard = function(nRow, nCol) {
-    var blockWidth = CanvasManager.canvas.width;
-    var blockHeight = CanvasManager.canvas.height;
-
-    blockWidth /= nCol;       
-    blockHeight /= nRow;       
-
-    for (var i = 0; i < nRow; ++i) {
-        for (var j = 0; j < nCol; ++j) {
-
-            if(i < 2 || i > 4) {
-                
-            shapeVariable = new shapeVariableConstructor(2*j*blockWidth+(i%2 ?  0 : blockWidth), i*blockHeight, blockWidth, blockHeight,"#8c8c8c");
-            pushShapeVariable(shapeVariable,allShapes);
-       
-            shapeVariable = new shapeVariableConstructor(2*j*blockWidth+(i%2 ?  blockWidth : 0), i*blockHeight, blockWidth, blockHeight,"black");
-            pushShapeVariable(shapeVariable,allShapes);
-
-            }
-            else {
-                //generate obstacles
-                if(Constants.drawbacks && unlucky(i,j)) {
-                Constants.drawbacks--;
-                shapeVariable= new shapeVariableConstructor(j*blockWidth,i*blockHeight,blockWidth,blockHeight,"#660000");
-                pushShapeVariable(shapeVariable,allShapes);
-                }
-
-                //battlefield
-                else {
-                //fill blocks 
-               shapeVariable= new shapeVariableConstructor(j*blockWidth,i*blockHeight,blockWidth,blockHeight,"#ff3333");
-               pushShapeVariable(shapeVariable,allShapes);
-
-                //borders
-                CanvasManager.context.strokeStyle = "#black";
-                CanvasManager.context.strokeRect(j*blockWidth, i*blockHeight, blockWidth, blockHeight);
-                }
-            }
-        }               
-    }    fillContext(allShapes); allShapesCopy=copyArray(allShapes);
-} 
-
-//unit placing view
-CanvasManager.drawBoardS = function(arr,start,finish) {     
-        
-    fillContext(arr);  fillWithText(arr,start,finish); 
-
-} 
-CanvasManager.battleView = function() {
-    Constants.drawbacks=5;
-    CanvasManager.drawBoard(Constants.NUMBER_OF_ROWS,Constants.NUMBER_OF_COLS);
+function getTypeOfHero(name) {
+    switch(name) {
+        case "K":
+            return Knight;
+        case "E":
+            return Elf;
+        case "D":
+            return Dwarf;
+    }
 }
 
-//get coordinates of clicked place in canvas
+CanvasManager.setCanCon = function(element) {
+    CanvasManager.canvas  = document.getElementById(element);
+    CanvasManager.context = CanvasManager.canvas.getContext('2d');
+}
+
+//pass array of rectangles -> fill them
+function fillContext(element) {
+    CanvasManager.context.fillStyle=element.bColor;
+    CanvasManager.context.fillRect(element.bX,element.bY,element.bWidth,element.bHeight);
+
+ }  
+
+ //pass array of rectangles -> fill them with text
+ function fillWithText(element) {
+    CanvasManager.context.font="30px Arial";
+    CanvasManager.context.fillStyle="black";
+    CanvasManager.context.fillText("X",element.bX+20,element.bY+40);
+}
+
+//get coordinates of clicked place
 CanvasManager.getRelativeCoords = function(event) {
     clickedX=event.offsetX;
     clickedY=event.offsetY;
@@ -150,33 +74,121 @@ CanvasManager.getRelativeCoords = function(event) {
     placeUnit(clickedX,clickedY);
 }
 
+CanvasManager.selectHero = function(selectedHero) {
+    heroType=selectedHero;
+}
+
+//check availability of hero type
+function isAvailable (hero) {
+  switch(hero.bName) {
+      case "K": 
+          k++;
+          break;
+      case "E":
+          e++;
+
+          break;
+      case "D":
+          d++;
+
+          break;
+  }
+    if(k==2) {
+    document.getElementById("Knight").style="display: none";
+    k=0;
+  }
+  else if(e==2) {
+        document.getElementById("Elf").style="display: none";
+        e=0;
+  }
+  else if(d==2) {
+    d=0;
+
+    document.getElementById("Dwarf").style="display: none";
+  }
+}
+
+//place hero
 function placeUnit(x,y) {
     if(heroType) {
-    CanvasManager.context.fillStyle="white";
-    for(var i =0;i<allShapesCopy.length;i++) {
-        var left = allShapesCopy[i].bX;
-        var right = allShapesCopy[i].bX+allShapesCopy[i].bWidth;
-        var top = allShapesCopy[i].bY;
-        var bottom = allShapesCopy[i].bY+allShapesCopy[i].bHeight;
+    for(var i =0;i<selectionRects.length;i++) {
+        var left = selectionRects[i].bX;
+        var right = selectionRects[i].bX+selectionRects[i].bWidth;
+        var top = selectionRects[i].bY;
+        var bottom = selectionRects[i].bY+selectionRects[i].bHeight;
 
-        if (right >= x && left <= x && bottom >= y && top <= y 
-            && checkBattlefield(bottom)) {
-            console.log(bottom);  
-            CanvasManager.context.fillRect(allShapesCopy[i].bX,allShapesCopy[i].bY,55,55);
+        if (right >= x && left <= x && bottom >= y && top <= y ) 
+        {
+            var hero = new heroConstructor(selectionRects[i].bX,selectionRects[i].bY,heroType);
+            isAvailable(hero);
+            fillContext(hero);
+            heroes.push(hero); 
             CanvasManager.context.font="30px Arial";
             CanvasManager.context.fillStyle="black";
-            CanvasManager.context.fillText(heroType,allShapesCopy[i].bX+20, allShapesCopy[i].bY+40);
+            CanvasManager.context.fillText(hero.bName,selectionRects[i].bX+20, selectionRects[i].bY+40);
             }
-    } heroType=null;
+    }          heroType=null; 
+               if(heroes.length==6) {CanvasManager.drawSelectionBoard(2); reShowAvailablePlayers();} 
+    }
+}
+function setPlayer(n) {
+    var whichPlayersTurn=document.getElementById("player-turn");
+if(n) {
+    whichPlayersTurn.innerHTML="Player Two's turn";
+}
+else {
+    whichPlayersTurn.innerHTML="Player One's turn";
+}
 }
 
+//show available players for player two
+function reShowAvailablePlayers() {
+    setPlayer(2);
+    var arr = document.getElementsByClassName("heroes");
+    for(var i=0;i<arr.length;i++) {
+        arr[i].style="display:";
+    }
 }
 
-CanvasManager.selectHero = function(selectedHero) {
-heroType=selectedHero;
-}
+CanvasManager.drawSelectionBoard = function(n) {
+    setPlayer();
+    var blockWidth = CanvasManager.canvas.width;
+    var blockHeight = CanvasManager.canvas.height;
 
-//check whether 
-function checkBattlefield(bottom) {
- return bottom>Players.playerTwoBattlefield.start && bottom<Players.playerTwoBattlefield.end
-}
+    nRow=Constants.NUMBER_OF_ROWS;
+    nCol=Constants.NUMBER_OF_COLS;
+
+    blockWidth /= nCol;       
+    blockHeight /= nRow;       
+
+    for (var i = 0; i < nRow; ++i) {
+        for (var j = 0; j < nCol; ++j) {
+
+            if(n==1 ? i < 2:i>4) {
+                
+            initialRect = new initialRects(2*j*blockWidth+(i%2 ?  0 : blockWidth), i*blockHeight, blockWidth, blockHeight,"#8c8c8c");
+            fillContext(initialRect);
+            selectionRects.push(initialRect);
+
+            
+            initialRect = new initialRects(2*j*blockWidth+(i%2 ?  blockWidth : 0), i*blockHeight, blockWidth, blockHeight,"black");
+            fillContext(initialRect);
+            selectionRects.push(initialRect);
+
+            }
+            else {
+                 
+                //battlefield
+                //fill blocks 
+               initialRect= new initialRects(j*blockWidth,i*blockHeight,blockWidth,blockHeight,"#ff3333");
+               fillContext(initialRect);
+               fillWithText(initialRect);
+                
+                //borders
+                CanvasManager.context.strokeStyle = "#black";
+                CanvasManager.context.strokeRect(j*blockWidth, i*blockHeight, blockWidth, blockHeight);
+                
+            }
+        }               
+    }    
+} 

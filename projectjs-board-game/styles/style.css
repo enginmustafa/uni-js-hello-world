@@ -12,3 +12,8 @@ cursor: pointer;
     font-size:20px;
     display:block;
 }
+
+#player-turn {
+    margin-left: 10px;
+    font-size:30px;
+}

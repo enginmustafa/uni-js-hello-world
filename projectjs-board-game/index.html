@@ -14,12 +14,18 @@
         <canvas style="float:left" id="game-board" onclick="CanvasManager.getRelativeCoords(event);" width="499" height="389"
         style="border: solid 1px red"></canvas>
         <div style="float:left">
+            <span id ="player-turn"></span>
             <span id="available-heroes">Available Heroes</span>
-            <span class="heroes" onclick="CanvasManager.selectHero(this.textContent);">K</span>
-            <span class="heroes" onclick="CanvasManager.selectHero(this.textContent);">D</span>
-            <span class="heroes" onclick="CanvasManager.selectHero(this.textContent);">E</span>
+            <span id="Knight" class="heroes" onclick="CanvasManager.selectHero(this.textContent);">K</span>
+            <span id="Dwarf"  class="heroes" onclick="CanvasManager.selectHero(this.textContent);">D</span>
+            <span id="Elf" class="heroes" onclick="CanvasManager.selectHero(this.textContent);">E</span>
         </div>
              
+        <script src="models/elf.js"></script>
+        <script src="models/knight.js"></script>
+        <script src="models/dwarf.js"></script>
+
+
         <script src="constants.js"></script>
         <script src="canvas.js"></script>
         <script src="script.js"></script>
