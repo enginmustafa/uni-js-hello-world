@@ -22,6 +22,18 @@ var k=0;
 var d=0;
 var e=0;
 
+//store action type
+var actionType=null;
+
+//store rect the player wants to move his hero
+var desiredRect=null;
+
+//store rectangles of battle view once generated, for refreshing the view after moving a unit
+var battleViewRects=[];
+
+//store rectangles to stroke after movement of hero(because they gray out)
+var battlefieldRectsToStroke=[];
+
 //randomly generate position for a drawback and store it to variable
 var initialDrawbackPosition =  {
     "x":getRandomNumber(3,5)-1,"y":getRandomNumber(1,9)-1
@@ -71,10 +83,10 @@ function fillContext(element) {
  }  
 
  //pass array of rectangles -> fill them with text
- function fillWithText(element) {
+ function fillWithText(element,text) {
     CanvasManager.context.font="30px Arial";
     CanvasManager.context.fillStyle="black";
-    CanvasManager.context.fillText("X",element.bX+20,element.bY+40);
+    CanvasManager.context.fillText(text,element.bX+20,element.bY+40);
 }
 
 //get coordinates of clicked place
@@ -83,7 +95,13 @@ CanvasManager.getRelativeCoords = function(event) {
     clickedY=event.offsetY;
 
     placeUnit(clickedX,clickedY);
+    moveHero(clickedX,clickedY);
+
+   //if a hero was chosen to move, set flag to true and go to specified function 
+   if(desiredRect) { setDesiredRectToMove(clickedX,clickedY); }
+
 }
+
 
 CanvasManager.selectHero = function(selectedHero) {
     heroType=selectedHero;
@@ -131,13 +149,13 @@ function placeUnit(x,y) {
         if (right >= x && left <= x && bottom >= y && top <= y ) 
         {
             var hero = new heroConstructor(selectionRects[i].bX,selectionRects[i].bY,heroType);
-            if(isRectAvailable(hero)) {
+            if(isRectAvailable(hero,heroes)) {
             isAvailable(hero);
             fillContext(hero);
             heroes.push(hero); 
-            CanvasManager.context.font="30px Arial";
-            CanvasManager.context.fillStyle="black";
-            CanvasManager.context.fillText(hero.bName,selectionRects[i].bX+20, selectionRects[i].bY+40);}
+
+            fillWithText(selectionRects[i],hero.bName); }
+
             }
     }          heroType=null; 
                if(heroes.length==6) {CanvasManager.drawSelectionBoard(2); reShowAvailablePlayers();} 
@@ -155,10 +173,10 @@ else {
 }
 
 //check if desired rect isnt taken by another one already
-function isRectAvailable(element) {
+function isRectAvailable(element,arr) {
     var rectAvailable=true;
-    for(var i=0;i<heroes.length;i++) {
-        if(element.bX==heroes[i].bX && element.bY==heroes[i].bY)
+    for(var i=0;i<arr.length;i++) {
+        if(element.bX==arr[i].bX && element.bY==arr[i].bY)
         {rectAvailable=false;}
     }
     return rectAvailable;
@@ -198,18 +216,21 @@ CanvasManager.drawSelectionBoard = function(n) {
             fillContext(initialRect);
             selectionRects.push(initialRect);
 
+
             }
             else {
                 //battlefield
                 //fill blocks 
                initialRect= new initialRects(j*blockWidth,i*blockHeight,blockWidth,blockHeight,"#ff3333");
                fillContext(initialRect);
-               fillWithText(initialRect);
+               fillWithText(initialRect,"X");
                 
                 //borders
-                CanvasManager.context.strokeStyle = "#black";
-                CanvasManager.context.strokeRect(j*blockWidth, i*blockHeight, blockWidth, blockHeight);
-                
+                strokeRects(j*blockWidth, i*blockHeight, blockWidth, blockHeight,"#black"); 
+
+                //push rects to stroke to use when they gray out
+                var strokeRect = new initialRects(j*blockWidth, i*blockHeight, blockWidth, blockHeight,"#black");
+                battlefieldRectsToStroke.push(strokeRect);
             }
         }               
     }    
@@ -249,6 +270,11 @@ function placeHeroes(arr) {
    }
 }
 
+function strokeRects(x,y,width,height,color) {
+                CanvasManager.context.strokeStyle = color;
+                CanvasManager.context.strokeRect(x, y, width, height);
+}
+
 function drawBattleBoard() {
     document.getElementById("hero-placing-div").style="display: none";
     document.getElementById("hero-action-div").style="display:inline";
@@ -272,9 +298,13 @@ function drawBattleBoard() {
                 
             shapeVariable = new shapeVariableConstructor(2*j*blockWidth+(i%2 ?  0 : blockWidth), i*blockHeight, blockWidth, blockHeight,"#8c8c8c");
             fillContext(shapeVariable); 
+            battleViewRects.push(shapeVariable);
+
 
             shapeVariable = new shapeVariableConstructor(2*j*blockWidth+(i%2 ?  blockWidth : 0), i*blockHeight, blockWidth, blockHeight,"black");
             fillContext(shapeVariable); 
+            battleViewRects.push(shapeVariable);
+
 
             }
             else {
@@ -284,19 +314,109 @@ function drawBattleBoard() {
                  shapeVariable= new shapeVariableConstructor(j*blockWidth,i*blockHeight,blockWidth,blockHeight,"#660000");
                  drawbackRects.push(shapeVariable);
                  fillContext(shapeVariable); 
+                 battleViewRects.push(shapeVariable);
+
                 }
 
                 //battlefield
                 else {
                 //fill blocks 
-               shapeVariable= new shapeVariableConstructor(j*blockWidth,i*blockHeight,blockWidth,blockHeight,"#ff3333");
+                shapeVariable= new shapeVariableConstructor(j*blockWidth,i*blockHeight,blockWidth,blockHeight,"#ff3333");
                 fillContext(shapeVariable); 
+                battleViewRects.push(shapeVariable);
+
 
                 //borders
-                CanvasManager.context.strokeStyle = "#black";
-                CanvasManager.context.strokeRect(j*blockWidth, i*blockHeight, blockWidth, blockHeight);
+                strokeRects(j*blockWidth, i*blockHeight, blockWidth, blockHeight,"#black");
                 }
             }
         }               
     }   placeHeroes(heroes); 
 } 
+
+CanvasManager.selectAction = function (action) {
+    actionType=action;
+
+}
+
+//store position of hero that was clicked in order to perform move-action
+var heroPosition;
+
+function moveHero(x,y) {
+    if(actionType) {
+
+    for(var i=0;i<heroes.length;i++) {
+    var left = heroes[i].bX;
+    var right = heroes[i].bX+heroes[i].bWidth;
+    var top = heroes[i].bY;
+    var bottom = heroes[i].bY+heroes[i].bHeight;
+
+        if (right >= x && left <= x && bottom >= y && top <= y ) {
+        //heroes[i].bX+=55;
+        heroPosition=i;
+        desiredRect=true; 
+        }
+   }    
+   //fillBattleView();
+
+}
+}
+
+//re-stroke rectangles that had borders(because of the redrawing without stroking)
+function strokeRectsAfterGrayOut(arr) {
+ for(var i=0;i<arr.length;i++) {
+     strokeRects(arr[i].bX,arr[i].bY,arr[i].bWidth,arr[i].bHeight,"black");
+ }
+}
+
+//place rects of given array to canvas
+function goToBattleView(arr) {
+    for(var i=0;i<arr.length;i++) {
+        fillContext(arr[i]);
+    }
+    strokeRectsAfterGrayOut(battlefieldRectsToStroke);
+}
+
+function fillBattleView() {
+    goToBattleView(battleViewRects); //place battle view rects
+    goToBattleView(heroes); //place hero rects
+
+    //fill hero rects with their name
+    for(var i=0;i<heroes.length;i++) {
+        fillWithText(heroes[i],heroes[i].bName);
+    }
+}
+
+
+//get x,y of clicked place
+function setDesiredRectToMove(x,y) {
+
+    //store coordinates of a hero after possible movement 
+    var heroAfterMovement;
+
+    //loop through rectangles of battleview
+    for(var i =0;i<battleViewRects.length;i++) {
+        var left = battleViewRects[i].bX;
+        var right = battleViewRects[i].bX+battleViewRects[i].bWidth;
+        var top = battleViewRects[i].bY;
+        var bottom = battleViewRects[i].bY+battleViewRects[i].bHeight;
+
+        heroAfterMovement = new heroConstructor(left,top);
+
+        //if clicked place's coordinates belong to a rectangle 
+        if (right >= x && left <= x && bottom >= y && top <= y  
+            //check whether desired place belongs to a drawback
+            && isRectAvailable(heroAfterMovement,drawbackRects) && isRectAvailable(heroAfterMovement,heroes)) 
+        {
+            
+            //change selected hero's coordinates(move it)
+            heroes[heroPosition].bX=left;
+            heroes[heroPosition].bY=top;
+            heroes[heroPosition].bWidth=right-left;
+            heroes[heroPosition].bHeight=bottom-top;
+        }
+    }//perform changes    
+     fillBattleView();
+      
+}          
+    
