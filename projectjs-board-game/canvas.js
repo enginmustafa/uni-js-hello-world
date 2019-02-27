@@ -52,7 +52,7 @@ function heroConstructor (bX,bY,bName) {
     this.bY=bY;
     this.bWidth=55;
     this.bHeight=55;
-    this.bColor="white";
+    this.bColor=Constants.heroBackgroundColor;
     this.bName=bName;
     this.bType=getTypeOfHero(bName);
 }
@@ -84,8 +84,8 @@ function fillContext(element) {
 
  //pass array of rectangles -> fill them with text
  function fillWithText(element,text) {
-    CanvasManager.context.font="30px Arial";
-    CanvasManager.context.fillStyle="black";
+    CanvasManager.context.font=Constants.fillFont;
+    CanvasManager.context.fillStyle=Constants.fillColor;
     CanvasManager.context.fillText(text,element.bX+20,element.bY+40);
 }
 
@@ -95,10 +95,18 @@ CanvasManager.getRelativeCoords = function(event) {
     clickedY=event.offsetY;
 
     placeUnit(clickedX,clickedY);
-    moveHero(clickedX,clickedY);
 
+    //if action-move was chosen
+    if(actionType=="move") {
+    moveHero(clickedX,clickedY);
    //if a hero was chosen to move, set flag to true and go to specified function 
    if(desiredRect) { setDesiredRectToMove(clickedX,clickedY); }
+    }
+
+    //if action-heal was chosen
+    if(actionType=="heal") {
+        healHero(clickedX,clickedY);
+    }
 
 }
 
@@ -132,7 +140,6 @@ function isAvailable (hero) {
   }
   else if(d==2) {
     d=0;
-
     document.getElementById("Dwarf").style="display: none";
   }
 }
@@ -267,7 +274,7 @@ function placeHeroes(arr) {
        CanvasManager.context.fillStyle="black";
        if(i>5) {arr[i].bName+="*";}
        CanvasManager.context.fillText(arr[i].bName,arr[i].bX+20, arr[i].bY+40);
-   }
+   } console.log(heroes);
 }
 
 function strokeRects(x,y,width,height,color) {
@@ -336,7 +343,6 @@ function drawBattleBoard() {
 
 CanvasManager.selectAction = function (action) {
     actionType=action;
-
 }
 
 //store position of hero that was clicked in order to perform move-action
@@ -352,12 +358,10 @@ function moveHero(x,y) {
     var bottom = heroes[i].bY+heroes[i].bHeight;
 
         if (right >= x && left <= x && bottom >= y && top <= y ) {
-        //heroes[i].bX+=55;
         heroPosition=i;
         desiredRect=true; 
         }
-   }    
-   //fillBattleView();
+   }   
 
 }
 }
@@ -366,7 +370,7 @@ function moveHero(x,y) {
 function strokeRectsAfterGrayOut(arr) {
  for(var i=0;i<arr.length;i++) {
      strokeRects(arr[i].bX,arr[i].bY,arr[i].bWidth,arr[i].bHeight,"black");
- }
+ }      
 }
 
 //place rects of given array to canvas
@@ -375,6 +379,7 @@ function goToBattleView(arr) {
         fillContext(arr[i]);
     }
     strokeRectsAfterGrayOut(battlefieldRectsToStroke);
+
 }
 
 function fillBattleView() {
@@ -387,7 +392,8 @@ function fillBattleView() {
     }
 }
 
-
+//store how many times the loop below was entered
+var heroMovement=0;
 //get x,y of clicked place
 function setDesiredRectToMove(x,y) {
 
@@ -408,7 +414,6 @@ function setDesiredRectToMove(x,y) {
             //check whether desired place belongs to a drawback
             && isRectAvailable(heroAfterMovement,drawbackRects) && isRectAvailable(heroAfterMovement,heroes)) 
         {
-            
             //change selected hero's coordinates(move it)
             heroes[heroPosition].bX=left;
             heroes[heroPosition].bY=top;
@@ -417,6 +422,27 @@ function setDesiredRectToMove(x,y) {
         }
     }//perform changes    
      fillBattleView();
-      
+     
+      heroMovement++; 
+      //if loop was entered twice->hero was placed ->set action to null, make player choose action, 
+      //if else no action will be applied 
+      if(heroMovement%2==0) {actionType=null;}
 }          
+
+function healHero(x,y) {
+    if(actionType) {
+        for(var i=0;i<heroes.length;i++) {
+        var left = heroes[i].bX;
+        var right = heroes[i].bX+heroes[i].bWidth;
+        var top = heroes[i].bY;
+        var bottom = heroes[i].bY+heroes[i].bHeight;
+    
+            if (right >= x && left <= x && bottom >= y && top <= y ) {
+            var healQuantity = getRandomNumber(1,6);
+            console.log(heroes[i].bType.health);
+            heroes[i].bType.health+=healQuantity;
+            }
+       }  actionType=null;
+    }
+}
     
