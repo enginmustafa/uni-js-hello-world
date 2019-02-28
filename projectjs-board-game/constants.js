@@ -11,3 +11,5 @@ Players.playerTwoBattlefield = {"start": 333,"end":500};
 Constants.heroBackgroundColor="white";
 Constants.fillFont="30px Arial";
 Constants.fillColor="black";
+
+Constants.differentiateOfCoordinatesDueToStroke=2;

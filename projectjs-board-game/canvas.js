@@ -412,8 +412,9 @@ function setDesiredRectToMove(x,y) {
         //if clicked place's coordinates belong to a rectangle 
         if (right >= x && left <= x && bottom >= y && top <= y  
             //check whether desired place belongs to a drawback
-            && isRectAvailable(heroAfterMovement,drawbackRects) && isRectAvailable(heroAfterMovement,heroes)) 
-        {
+            && isRectAvailable(heroAfterMovement,drawbackRects) && isRectAvailable(heroAfterMovement,heroes)
+            && canHeroMove(heroes[heroPosition],heroAfterMovement)) 
+        {            
             //change selected hero's coordinates(move it)
             heroes[heroPosition].bX=left;
             heroes[heroPosition].bY=top;
@@ -446,3 +447,39 @@ function healHero(x,y) {
     }
 }
     
+//check whether chosen rect is equal to/smaller than distance between it and hero's speed
+function canHeroMove(bHero,aHero) {
+var speed=bHero.bType.speed;
+
+    //up-down
+    if(bHero.bX==aHero.bX) 
+        {
+            //up -- if before position - after position < rects height * hero's speed => move
+           if(bHero.bY>aHero.bY && 
+              bHero.bY-aHero.bY < bHero.bHeight*speed+Constants.differentiateOfCoordinatesDueToStroke) {
+           return true;
+           }
+           //down -- if after position - before position < rects height*hero's speed => move
+           else if(bHero.bY<aHero.bY && 
+                   aHero.bY-bHero.bY < bHero.bHeight*speed+Constants.differentiateOfCoordinatesDueToStroke) {
+               return true;
+           }
+        }
+    //right-left    
+    else if(bHero.bY==aHero.bY) {
+        //right
+        console.log(aHero.bX+" "+bHero.bX)
+        if(bHero.bX<aHero.bX &&
+            aHero.bX<bHero.bX+(bHero.bWidth*speed)+Constants.differentiateOfCoordinatesDueToStroke) {
+            return true;
+        }
+        //left
+        else if(bHero.bX>aHero.bX &&
+                bHero.bX<aHero.bX+(bHero.bWidth*speed)+Constants.differentiateOfCoordinatesDueToStroke) {
+            return true;
+        }
+    }    
+    else {
+        return false;
+    }
+}

@@ -3,5 +3,5 @@ var Dwarf = {
     "armor" :2,
     "health" : 12,
     "attackRange" : 2,
-    "speed":2
+    "speed": 2
     }
