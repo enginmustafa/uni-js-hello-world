@@ -1,4 +1,3 @@
-
 var CanvasManager = {};
 
 CanvasManager.canvas=null;
@@ -29,6 +28,9 @@ var actionType=null;
 //store rect the player wants to move his hero
 var desiredRect=null;
 
+//store hero the player wants to attack
+var desiredHero=null;
+
 //store rectangles of battle view once generated, for refreshing the view after moving a unit
 var battleViewRects=[];
 
@@ -41,7 +43,7 @@ var actionCounter=0;
 
 //randomly generate position for a drawback and store it to variable
 var initialDrawbackPosition =  {
-    "x":getRandomNumber(3,5)-1,"y":getRandomNumber(1,9)-1
+    "x":random.getRandomNumber(Constants.battleField.startCol,Constants.battleField.endCol)-1,"y":random.getRandomNumber(1,Constants.NUMBER_OF_COLS)-1
 }
 
 function initialRects (bX,bY,bWidth,bHeight,bColor) {
@@ -60,9 +62,6 @@ function heroConstructor (bX,bY,bName) {
     this.bColor=Constants.heroBackgroundColor;
     this.bName=bName;
     this.bType=getTypeOfHero(bName);
-}
-function getRandomNumber (min,max) {
-    return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
 
 function getTypeOfHero(name) {
@@ -105,7 +104,7 @@ CanvasManager.getRelativeCoords = function(event) {
 
     //if action-move was chosen
     if(actionType=="move") {
-       moveHero(clickedX,clickedY);
+       getChosenHero(clickedX,clickedY);
 
        //if a hero was chosen to move, set flag to true and go to specified function 
       if(desiredRect) { setDesiredRectToMove(clickedX,clickedY); }
@@ -116,6 +115,16 @@ CanvasManager.getRelativeCoords = function(event) {
     if(actionType=="heal") {
         healHero(clickedX,clickedY);
     }
+
+    //if action-attack was chosen
+    if(actionType=="attack") {
+    getChosenHero(clickedX,clickedY);
+      
+      //if hero was chosen to attack, set flag to true and go to specified function
+      if(desiredHero) {attack(clickedX,clickedY);}
+    }
+
+    //visualize players turn
     viewPlayersTurn(actionCounter);
 }
 
@@ -185,8 +194,8 @@ function placeUnit(x,y) {
 
             }
     }          heroType=null; 
-               if(heroes.length==6) {CanvasManager.drawSelectionBoard(2); reShowAvailablePlayers();} 
-               else if(heroes.length==12) {drawBattleBoard();}
+               if(heroes.length==Players.playersHeroesQuantity) {CanvasManager.drawSelectionBoard(2); reShowAvailablePlayers();} 
+               else if(heroes.length==(Players.playersHeroesQuantity*2)) {drawBattleBoard();}
     }
 }
 function setPlayer(n) {
@@ -220,8 +229,8 @@ function reShowAvailablePlayers() {
 
 CanvasManager.drawSelectionBoard = function(n) {
     setPlayer();
-    var blockWidth = CanvasManager.canvas.width;
-    var blockHeight = CanvasManager.canvas.height;
+    var blockWidth = Constants.CanvasWH.width;
+    var blockHeight = Constants.CanvasWH.height;
 
     nRow=Constants.NUMBER_OF_ROWS;
     nCol=Constants.NUMBER_OF_COLS;
@@ -282,7 +291,7 @@ function unlucky  (blockX,blockY) {
 
     //add drawback randomly
      else {
-      if(getRandomNumber(1,20)==1) return true;
+      if(random.getRandomNumber(1,20)==1) return true;
       }
 } 
 
@@ -321,7 +330,7 @@ function drawBattleBoard() {
     for (var i = 0; i < nRow; ++i) {
         for (var j = 0; j < nCol; ++j) {
 
-            if(i < 2 || i > 4) {
+            if(i < Players.playerOneBattlefield.startRow || i > Players.playerTwoBattlefield.startRow) {
                 
             shapeVariable = new shapeVariableConstructor(2*j*blockWidth+(i%2 ?  0 : blockWidth), i*blockHeight, blockWidth, blockHeight,"#8c8c8c");
             fillContext(shapeVariable); 
@@ -368,7 +377,7 @@ CanvasManager.selectAction = function (action) {
 //store position of hero that was clicked in order to perform move-action
 var heroPosition;
 
-function moveHero(x,y) {
+function getChosenHero(x,y) {
     if(actionType) {
 
     for(var i=0;i<heroes.length;i++) {
@@ -379,9 +388,10 @@ function moveHero(x,y) {
 
         if (right >= x && left <= x && bottom >= y && top <= y ) {        
         heroPosition=i;
-        desiredRect=true; 
+        if(actionType=="move") {desiredRect=true; }
+        else if(actionType=="attack") {desiredHero=true;}
         }
-   }   
+   }  
 
 }
 }
@@ -464,8 +474,9 @@ function healHero(x,y) {
     
             if (right >= x && left <= x && bottom >= y && top <= y) {
                 if(i>=whichPlayerInAction(actionCounter).min && i <= whichPlayerInAction(actionCounter).max) {
-                 actionCounter++;
-                 var healQuantity = getRandomNumber(1,6);
+                    //if dice value is odd, dont change action counter ->give the same player one more action right
+                    if(Dice.toss % 2 != 0) {actionCounter++;}
+                 var healQuantity = Dice.toss;
                  heroes[i].bType.health+=healQuantity;
                 }
             }
@@ -507,5 +518,73 @@ var speed=bHero.bType.speed;
     else {
         return false;
     }
+}
+
+//attack player
+function attack(x,y) {
+    for(var i =0;i<heroes.length;i++) {
+        var left = heroes[i].bX;
+        var right = heroes[i].bX+heroes[i].bWidth;
+        var top = heroes[i].bY;
+        var bottom = heroes[i].bY+heroes[i].bHeight;
+        
+        //if clicked place's coordinates belong to a rectangle 
+        if (right >= x && left <= x && bottom >= y && top <= y)  
+        {            
+             //if chosen hero is one of heroes of the player that is on turn
+            if(heroPosition>=whichPlayerInAction(actionCounter).min && heroPosition <= whichPlayerInAction(actionCounter).max
+               //if hero is within targets range -> attack
+               && canAttack(heroes[i],heroes[heroPosition])) {
+              actionCounter++;
+              //change selected hero's health(attack it)
+              calculateDamage(heroPosition,i);
+    }
+      heroMovement++; 
+      //if loop was entered twice->hero was attacked ->set action to null, make player choose action, 
+      //if else no action will be applied 
+      if(heroMovement%2==0) {actionType=null; desiredRect=null;}
+      }          
+    }
+}
+
+//return true if target is within hero's range
+function canAttack(aHero,bHero) {
+        if(bHero.bX==aHero.bX) 
+        {
+            //up -- if hero position - target position < rects height * hero's attack range => attack
+           if(bHero.bY>aHero.bY && 
+              bHero.bY-aHero.bY < bHero.bHeight*bHero.bType.attackRange+Constants.differentiateOfCoordinatesDueToStroke) {
+           return true;
+           }
+           //down -- if target position - hero position < rects height*hero's attack  => attack
+           else if(bHero.bY<aHero.bY && 
+                   aHero.bY-bHero.bY < bHero.bHeight*bHero.bType.attackRange+Constants.differentiateOfCoordinatesDueToStroke) {
+               return true;
+           }
+        }
+    }
+
+//fPos-target sPos-attacker        
+function calculateDamage(fPos,sPos) {
+    var firstDice=Dice.toss();
+    var secondDice=Dice.toss();
+    var thirdDice=Dice.toss();
+    var sumOfDices = firstDice + secondDice + thirdDice;
+
+    //if sum of three dices == health of target - dont perform anything
+    if(heroes[fPos].bType.health==sumOfDices) {
+    heroes[fPos].bType.health=heroes[fPos].bType.health;
+    }
+
+    //if sum of three dices == the minimum possible sum of them - apply only half damage
+    if(sumOfDices==Dice.min*3) {
+    heroes[fPos].bType.health-=(sPos[i].bType.attack-heroes[fPos].bType.armor)/2;
+    }
+
+    //else apply full damage
+    else {
+        heroes[fPos].bType.health-=(sPos[i].bType.attack-heroes[fPos].bType.armor);
+    }
+
 }
 
