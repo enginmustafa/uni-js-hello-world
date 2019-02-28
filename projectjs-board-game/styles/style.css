@@ -28,7 +28,7 @@ cursor: pointer;
     border: 1px solid red;
 }
 #players-turn {
-    font-size:30px;
+    font-size:20px;
 }
 #hero-action-div li {
 margin-left:10px;

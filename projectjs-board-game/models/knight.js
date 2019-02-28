@@ -3,5 +3,5 @@ var Knight = {
 "armor" :3,
 "health" : 5,
 "attackRange" : 1,
-"speed":1
+"speed": 1
 }

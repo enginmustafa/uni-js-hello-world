@@ -3,5 +3,5 @@ var Elf = {
     "armor" :1,
     "health" : 10,
     "attackRange" : 3,
-    "speed":3
+    "speed": 3
     }

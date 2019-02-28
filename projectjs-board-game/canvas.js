@@ -1,3 +1,4 @@
+
 var CanvasManager = {};
 
 CanvasManager.canvas=null;
@@ -33,6 +34,10 @@ var battleViewRects=[];
 
 //store rectangles to stroke after movement of hero(because they gray out)
 var battlefieldRectsToStroke=[];
+
+//varialbe to store each time switch between players made
+var actionCounter=0;
+
 
 //randomly generate position for a drawback and store it to variable
 var initialDrawbackPosition =  {
@@ -94,26 +99,41 @@ CanvasManager.getRelativeCoords = function(event) {
     clickedX=event.offsetX;
     clickedY=event.offsetY;
 
+    //viewPlayersTurn(actionCounter);
+
     placeUnit(clickedX,clickedY);
 
     //if action-move was chosen
     if(actionType=="move") {
-    moveHero(clickedX,clickedY);
-   //if a hero was chosen to move, set flag to true and go to specified function 
-   if(desiredRect) { setDesiredRectToMove(clickedX,clickedY); }
-    }
+       moveHero(clickedX,clickedY);
+
+       //if a hero was chosen to move, set flag to true and go to specified function 
+      if(desiredRect) { setDesiredRectToMove(clickedX,clickedY); }
+      }
+    
 
     //if action-heal was chosen
     if(actionType=="heal") {
         healHero(clickedX,clickedY);
     }
-
+    viewPlayersTurn(actionCounter);
 }
 
+function viewPlayersTurn(x) {
+    var element=document.getElementById("players-turn");
+    if(x%2) {element.innerHTML="Player Two's turn"}
+    else {element.innerHTML="Player One's turn."}
+}
+
+function whichPlayerInAction(x) {
+     if(x%2)  {return {"min": heroes.length/2-1 ,"max" : heroes.length-1};}
+     else  {return {"min": 0, "max":heroes.length/2-1};}
+}
 
 CanvasManager.selectHero = function(selectedHero) {
     heroType=selectedHero;
 }
+
 
 //check availability of hero type
 function isAvailable (hero) {
@@ -274,7 +294,7 @@ function placeHeroes(arr) {
        CanvasManager.context.fillStyle="black";
        if(i>5) {arr[i].bName+="*";}
        CanvasManager.context.fillText(arr[i].bName,arr[i].bX+20, arr[i].bY+40);
-   } console.log(heroes);
+   } 
 }
 
 function strokeRects(x,y,width,height,color) {
@@ -357,7 +377,7 @@ function moveHero(x,y) {
     var top = heroes[i].bY;
     var bottom = heroes[i].bY+heroes[i].bHeight;
 
-        if (right >= x && left <= x && bottom >= y && top <= y ) {
+        if (right >= x && left <= x && bottom >= y && top <= y ) {        
         heroPosition=i;
         desiredRect=true; 
         }
@@ -415,11 +435,15 @@ function setDesiredRectToMove(x,y) {
             && isRectAvailable(heroAfterMovement,drawbackRects) && isRectAvailable(heroAfterMovement,heroes)
             && canHeroMove(heroes[heroPosition],heroAfterMovement)) 
         {            
-            //change selected hero's coordinates(move it)
-            heroes[heroPosition].bX=left;
-            heroes[heroPosition].bY=top;
-            heroes[heroPosition].bWidth=right-left;
-            heroes[heroPosition].bHeight=bottom-top;
+             //if chosen hero is one of heroes of the player that is on turn
+            if(heroPosition>=whichPlayerInAction(actionCounter).min && heroPosition <= whichPlayerInAction(actionCounter).max) {
+              actionCounter++;
+              //change selected hero's coordinates(move it)
+              heroes[heroPosition].bX=left;
+              heroes[heroPosition].bY=top;
+              heroes[heroPosition].bWidth=right-left;
+              heroes[heroPosition].bHeight=bottom-top;
+             }
         }
     }//perform changes    
      fillBattleView();
@@ -438,10 +462,12 @@ function healHero(x,y) {
         var top = heroes[i].bY;
         var bottom = heroes[i].bY+heroes[i].bHeight;
     
-            if (right >= x && left <= x && bottom >= y && top <= y ) {
-            var healQuantity = getRandomNumber(1,6);
-            console.log(heroes[i].bType.health);
-            heroes[i].bType.health+=healQuantity;
+            if (right >= x && left <= x && bottom >= y && top <= y) {
+                if(i>=whichPlayerInAction(actionCounter).min && i <= whichPlayerInAction(actionCounter).max) {
+                 actionCounter++;
+                 var healQuantity = getRandomNumber(1,6);
+                 heroes[i].bType.health+=healQuantity;
+                }
             }
        }  actionType=null;
     }
@@ -468,7 +494,6 @@ var speed=bHero.bType.speed;
     //right-left    
     else if(bHero.bY==aHero.bY) {
         //right
-        console.log(aHero.bX+" "+bHero.bX)
         if(bHero.bX<aHero.bX &&
             aHero.bX<bHero.bX+(bHero.bWidth*speed)+Constants.differentiateOfCoordinatesDueToStroke) {
             return true;
@@ -483,3 +508,4 @@ var speed=bHero.bType.speed;
         return false;
     }
 }
+
