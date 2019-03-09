@@ -1,0 +1,35 @@
+#matches {
+    width: 300px;
+    height:630px;
+    overflow: scroll;
+    border:1px solid;
+}
+
+#matches .country-name {
+    background-color:#ffb3b3;
+    margin-top:10px;
+    font-size:13px;
+    display: block;
+
+}
+#matches .stadium-name {
+    background-color:#ffe6e6;
+    font-size:15px;
+    display: block;
+}
+
+#matches .goals {
+    font-size:15px;
+    color:black;
+    padding-left:5px;
+}
+#matches .on-target {
+    padding-left:3px;
+    padding-right:5px;
+    font-size:10px;
+    color: gray;
+}
+#matches .teams {
+    font-size:15px;
+    font-family: Georgia;
+}
