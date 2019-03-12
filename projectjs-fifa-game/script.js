@@ -7,7 +7,12 @@ function getData (url,callback) {
     }
 }
 
-getData("https://worldcup.sfg.io/matches", (data) => {
+getData("http://worldcup.sfg.io/matches", (data) => {
     ShowGames.show(data);
 });
 
+function showResult() {
+    getData("http://worldcup.sfg.io/matches", (data) => {
+    searchPlayers.submitSearch(data);
+   });
+}

@@ -1,4 +1,5 @@
 #matches {
+    float:left;
     width: 300px;
     height:630px;
     overflow: scroll;
@@ -32,4 +33,29 @@
 #matches .teams {
     font-size:15px;
     font-family: Georgia;
+}
+
+#search-box {
+    margin-left:10px;
+    width: 300px;
+    height:180px;
+    border:1px solid red;
+    float:left;
+}
+#result-box {
+    float:left;
+    margin-top:25px;
+    padding:5px;
+    width: 290px;
+    height:430px;
+}
+
+#select-pos {
+    margin-top:10px;
+}
+#select-topsub {
+    margin-top:10px;
+}
+#search-button {
+    margin-top:10px;
 }

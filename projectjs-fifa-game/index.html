@@ -10,8 +10,31 @@
 <body>
     <h1>Matches</h1>
     <div id="matches"></div>
+   
+    <form action="javascript:showResult();" id="search-box"><h2>Search player</h2>
+        <input type="text" class="searchTerm" id="search-country" placeholder="Country" required> 
+
+        <select id="select-pos" required>
+            <option value="">Position</option>
+            <option value="Goalie">Goalie</option>
+            <option value="Midfield">Midfield</option>
+            <option value="Forward">Forward</option>
+            <option value="Defender">Defender</option>
+        </select> <br>
+           
+        <div id="select-topsub">
+            <input type="radio" class="searchTerm" name="topsub" value="topeleven"> top-eleven 
+            <input type="radio" class="searchTerm" name="topsub" value="substitute"> substitute 
+        </div>
+
+        <button type="submit" value="Search" id="search-button">Search</button>
+        
+        <div id="result-box"></div>
+
+     </form>
     
     <script src="script.js"></script>
     <script src="showGames.js"></script>
+    <script src="searchPlayers.js"></script>
 </body>
 </html>

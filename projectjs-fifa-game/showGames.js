@@ -34,7 +34,7 @@ ShowGames.fillData = function(data) {
     element[j].textContent=data[i].home_team.goals;
     j++;
     element[j].className="on-target";
-    element[j].textContent=data[i].home_team_statistics.on_target;
+    element[j].textContent="("+data[i].home_team_statistics.on_target+")";
     j++;
     element[j].textContent="-";
     j++;
@@ -42,7 +42,7 @@ ShowGames.fillData = function(data) {
     element[j].textContent=data[i].away_team.goals;
     j++;
     element[j].className="on-target";
-    element[j].textContent=data[i].away_team_statistics.on_target;
+    element[j].textContent="("+data[i].away_team_statistics.on_target+")";
     j++;
     element[j].className="teams";
     element[j].textContent=data[i].home_team.country;
