@@ -1,9 +1,9 @@
 #matches {
-    float:left;
-    width: 300px;
-    height:630px;
-    overflow: scroll;
     border:1px solid;
+}
+#matches-wrapper {
+    width:40%;
+    margin: auto;
 }
 
 #matches .country-name {
@@ -36,10 +36,13 @@
 }
 
 #search-box {
-    margin-left:10px;
+    display:none;
+    margin-left:5px;
+    margin-top:60px;
+    padding-left:10px;
     width: 300px;
     height:180px;
-    border:1px solid red;
+    border: 3px solid red;
     float:left;
 }
 #result-box {
@@ -47,7 +50,6 @@
     margin-top:25px;
     padding:5px;
     width: 290px;
-    height:430px;
 }
 
 #select-pos {
@@ -58,4 +60,9 @@
 }
 #search-button {
     margin-top:10px;
+}
+#search-img {
+    width: 60px;
+    height: 60px;
+    float:left;
 }

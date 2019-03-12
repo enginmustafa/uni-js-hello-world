@@ -5,16 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <link rel="stylesheet" type="text/css" href="style.css"></link>
+    <link rel="stylesheet" type="text/css" href="styles/style.css"></link>
 </head>
 <body>
-    <h1>Matches</h1>
-    <div id="matches"></div>
-   
     <form action="javascript:showResult();" id="search-box"><h2>Search player</h2>
         <input type="text" class="searchTerm" id="search-country" placeholder="Country" required> 
 
-        <select id="select-pos" required>
+        <select id="select-pos">
             <option value="">Position</option>
             <option value="Goalie">Goalie</option>
             <option value="Midfield">Midfield</option>
@@ -30,11 +27,16 @@
         <button type="submit" value="Search" id="search-button">Search</button>
         
         <div id="result-box"></div>
-
      </form>
+
+     <div id="matches-wrapper">
+        <img id="search-img" onclick="searchClicked();" src="images/search.png" alt="Search Icon">
+        <h1 style="margin-left:auto">World Cup Matches</h1>
+         <div id="matches"></div>
+    </div>  
     
-    <script src="script.js"></script>
-    <script src="showGames.js"></script>
-    <script src="searchPlayers.js"></script>
+    <script src="scripts/script.js"></script>
+    <script src="scripts/showGames.js"></script>
+    <script src="scripts/searchPlayers.js"></script>
 </body>
 </html>

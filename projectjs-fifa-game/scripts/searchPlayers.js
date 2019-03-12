@@ -1,6 +1,7 @@
-//Search requires input of Country and Position
-//top-eleven or substite input is exceptional(if not selected, returns all players
-//in particular country that play in the given position)
+//Search requires only input of Country
+//if position and top eleven or susbstitute input is not given -> show all players that play for exact country
+//regardless of their position or if they are top eleven or susbstitute players
+//if they are given -> filter players appropriately
 
 
 searchPlayers={};
@@ -47,8 +48,14 @@ function searchAmongstAll(country,position,topOrSub,data) {
 //sort by position -> return sorted players 
 function sortByPosition(unsorted,position) {
     var sorted=[];
+    //if no position was selected -> show all players
    if(!position) {
-      return unsorted;
+    for(var j=0;j<unsorted.length;j++) {
+        for(var i=0;i<unsorted[j].length;i++) {
+             sorted.push(unsorted[j][i]);
+         }
+      }
+     return sorted;
    }
    else if(position) {
        //two fors because if no substitute or top eleven was chosen

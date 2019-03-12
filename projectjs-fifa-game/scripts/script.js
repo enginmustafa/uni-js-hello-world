@@ -16,3 +16,18 @@ function showResult() {
     searchPlayers.submitSearch(data);
    });
 }
+
+
+//on click to search image -> show or hide search box
+var searchFlag=true;
+function searchClicked() {
+    if(searchFlag) {
+    document.getElementById("search-box").style="display:inline";
+    searchFlag=false;
+    }
+    else {
+        document.getElementById("search-box").style="display:none";
+        searchFlag=true;
+
+    }
+}
