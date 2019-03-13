@@ -22,15 +22,19 @@ ShowGames.fillData = function(data) {
     element = ShowGames.gameContainer.childNodes;
     for(var i=0;i<data.length;i++) {
     element[j].className="country-name";
-    element[j].value=data[i].fifa_id;
     element[j].textContent=data[i].venue;
-    element[j].onclick=function(){detailedView.cityClicked(this)}
+    //for further use(details-city)
+    element[j].value=data[i].fifa_id;
+    element[j].style.cursor="pointer";
+    element[j].onclick = function() {detailedView.cityClicked(this,"cityDetails","http://worldcup.sfg.io/matches")};
     j++;
     element[j].className="stadium-name"; 
     element[j].textContent=data[i].location;
     j++;
     element[j].className="teams"; 
     element[j].textContent=data[i].home_team.country;
+    //on click show details about clicked team
+    element[j].onclick = function() {detailedView.cityClicked(this,"teamDetails","http://worldcup.sfg.io/teams/group_results")};
     j++;
     element[j].className="goals";
     element[j].textContent=data[i].home_team.goals;
@@ -48,6 +52,8 @@ ShowGames.fillData = function(data) {
     j++;
     element[j].className="teams";
     element[j].textContent=data[i].away_team.country;
+    //on click show details about clicked team
+    element[j].onclick = function() {detailedView.cityClicked(this,"teamDetails","http://worldcup.sfg.io/teams/group_results")};
     j++;
     }
 }
