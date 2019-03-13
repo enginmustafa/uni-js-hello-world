@@ -19,7 +19,6 @@ function showResult() {
    });
 }
 
-
 //on click to search image -> show or hide search box
 var searchFlag=true;
 function searchClicked() {

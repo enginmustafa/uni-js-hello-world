@@ -1,3 +1,9 @@
+//When venue is clicked
+//show details about its weather
+//before first click, details container is invisible
+//after first click it becomes visible
+//in each click performed it actualizes its information 
+
 detailedView ={};
 
 //get clicked city's fifa id
@@ -30,6 +36,8 @@ function findExactCity(id,country) {
 
 //update html
 function showCityDetails(hum,temp,wind,desc,name) {
+
+    document.getElementsByClassName("city-details")[0].style="display:inline";
 
   setInnerHtml("city-name-detail",name);
   setInnerHtml("weather-descr-detail",desc);
