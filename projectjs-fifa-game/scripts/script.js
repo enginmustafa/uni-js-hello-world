@@ -1,4 +1,6 @@
-function getData (url,callback) {
+Ajax={};
+
+Ajax.getData = function (url,callback) {
     var request = new XMLHttpRequest;
     request.open("GET",url);
     request.send();
@@ -7,12 +9,12 @@ function getData (url,callback) {
     }
 }
 
-getData("http://worldcup.sfg.io/matches", (data) => {
+Ajax.getData("http://worldcup.sfg.io/matches", (data) => {
     ShowGames.show(data);
 });
 
 function showResult() {
-    getData("http://worldcup.sfg.io/matches", (data) => {
+    Ajax.getData("http://worldcup.sfg.io/matches", (data) => {
     searchPlayers.submitSearch(data);
    });
 }
@@ -31,3 +33,4 @@ function searchClicked() {
 
     }
 }
+

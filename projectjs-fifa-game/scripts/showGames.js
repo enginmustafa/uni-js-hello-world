@@ -22,7 +22,9 @@ ShowGames.fillData = function(data) {
     element = ShowGames.gameContainer.childNodes;
     for(var i=0;i<data.length;i++) {
     element[j].className="country-name";
+    element[j].value=data[i].fifa_id;
     element[j].textContent=data[i].venue;
+    element[j].onclick=function(){detailedView.cityClicked(this)}
     j++;
     element[j].className="stadium-name"; 
     element[j].textContent=data[i].location;
@@ -45,7 +47,7 @@ ShowGames.fillData = function(data) {
     element[j].textContent="("+data[i].away_team_statistics.on_target+")";
     j++;
     element[j].className="teams";
-    element[j].textContent=data[i].home_team.country;
+    element[j].textContent=data[i].away_team.country;
     j++;
     }
 }

@@ -8,6 +8,15 @@
     <link rel="stylesheet" type="text/css" href="styles/style.css"></link>
 </head>
 <body>
+
+        <div class=city-details>
+            City: <span id="city-name-detail"></span><br>
+            Weather description: <span id="weather-descr-detail"></span><br>
+            Temperature (C): <span id="weather-temp-detail"></span><br>
+            Humidity: <span id="weather-hum-detail"></span><br>
+            Wind speed: <span id="weather-wind-detail"></span><br>
+
+        </div>
     <form action="javascript:showResult();" id="search-box"><h2>Search player</h2>
         <input type="text" class="searchTerm" id="search-country" placeholder="Country" required> 
 
@@ -28,15 +37,20 @@
         
         <div id="result-box"></div>
      </form>
-
+     
      <div id="matches-wrapper">
         <img id="search-img" onclick="searchClicked();" src="images/search.png" alt="Search Icon">
         <h1 style="margin-left:auto">World Cup Matches</h1>
          <div id="matches"></div>
     </div>  
     
+    
+    
+    
     <script src="scripts/script.js"></script>
     <script src="scripts/showGames.js"></script>
     <script src="scripts/searchPlayers.js"></script>
+    <script src="scripts/detailedView.js"></script>
+    
 </body>
 </html>
