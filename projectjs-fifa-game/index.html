@@ -8,15 +8,30 @@
     <link rel="stylesheet" type="text/css" href="styles/style.css"></link>
 </head>
 <body>
-
-        <div class=city-details>
+       <div style="width:300px; float:right">
+        <div class="city-details">
+            <h3>City details:</h3>
             City: <span id="city-name-detail"></span><br>
             Weather description: <span id="weather-descr-detail"></span><br>
             Temperature (C): <span id="weather-temp-detail"></span><br>
             Humidity: <span id="weather-hum-detail"></span><br>
             Wind speed: <span id="weather-wind-detail"></span><br>
-
         </div>
+        <div class="team-details">
+            <h3>Team details:</h3>
+            Team: <span id="team-name-detail"></span><br>
+            Group: <span id="team-group-detail"></span><br>
+            Points: <span id="team-points-detail"></span><br>
+            Wins: <span id="team-wins-detail"></span><br>
+            Draws: <span id="team-draws-detail"></span><br>
+            Losses: <span id="team-losses-detail"></span><br>
+            Games played: <span id="team-games-detail"></span><br>
+        </div>
+        <div class="goal-details">
+            <h2>Home team goals:</h2><div id="home-team-goal-details"></div>
+            <h2>Away team goals:</h2><div id="away-team-goal-details"></div>
+        </div>
+       </div>
     <form action="javascript:showResult();" id="search-box"><h2>Search player</h2>
         <input type="text" class="searchTerm" id="search-country" placeholder="Country" required> 
 

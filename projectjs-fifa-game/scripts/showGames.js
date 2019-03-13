@@ -26,7 +26,7 @@ ShowGames.fillData = function(data) {
     //for further use(details-city)
     element[j].value=data[i].fifa_id;
     element[j].style.cursor="pointer";
-    element[j].onclick = function() {detailedView.cityClicked(this,"cityDetails","http://worldcup.sfg.io/matches")};
+    element[j].onclick = function() {detailedView.detailClicked(this,"cityDetails","http://worldcup.sfg.io/matches")};
     j++;
     element[j].className="stadium-name"; 
     element[j].textContent=data[i].location;
@@ -34,7 +34,8 @@ ShowGames.fillData = function(data) {
     element[j].className="teams"; 
     element[j].textContent=data[i].home_team.country;
     //on click show details about clicked team
-    element[j].onclick = function() {detailedView.cityClicked(this,"teamDetails","http://worldcup.sfg.io/teams/group_results")};
+    element[j].style.cursor="pointer";
+    element[j].onclick = function() {detailedView.detailClicked(this,"teamDetails","http://worldcup.sfg.io/teams/group_results")};
     j++;
     element[j].className="goals";
     element[j].textContent=data[i].home_team.goals;
@@ -43,6 +44,10 @@ ShowGames.fillData = function(data) {
     element[j].textContent="("+data[i].home_team_statistics.on_target+")";
     j++;
     element[j].textContent="-";
+    //set value of element to id of clicked match for further authentication of the game
+    element[j].value=data[i].fifa_id;
+    element[j].style.cursor="pointer";
+    element[j].onclick = function() {detailedView.detailClicked(this,"gameDetails","http://worldcup.sfg.io/matches")};
     j++;
     element[j].className="goals";
     element[j].textContent=data[i].away_team.goals;
@@ -53,7 +58,8 @@ ShowGames.fillData = function(data) {
     element[j].className="teams";
     element[j].textContent=data[i].away_team.country;
     //on click show details about clicked team
-    element[j].onclick = function() {detailedView.cityClicked(this,"teamDetails","http://worldcup.sfg.io/teams/group_results")};
+    element[j].style.cursor="pointer";
+    element[j].onclick = function() {detailedView.detailClicked(this,"teamDetails","http://worldcup.sfg.io/teams/group_results")};
     j++;
     }
 }

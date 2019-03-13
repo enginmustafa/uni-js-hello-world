@@ -69,7 +69,7 @@
 }
 .city-details {
     float:right;
-    padding-top:70px;
+    padding-top:30px;
     width: 400px;
     font-size:20px;
     display:none;
@@ -78,4 +78,27 @@
 .city-details span {
     color:red;
     font-style:oblique;
+}
+.team-details{
+  float:right;
+  padding-top:10px;
+  width: 400px;
+  font-size:20px;
+  display:none;
+}
+.team-details span {
+    color: blue;
+    font-style:oblique;
+}
+
+.goal-details {
+    float:right;
+    width:400px;
+    padding-top:10px;
+    display:none;
+}
+
+.goal-details p {
+    font-size:20px;
+color:green;
 }

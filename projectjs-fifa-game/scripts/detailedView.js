@@ -9,19 +9,33 @@
 //find team in that group and get info about it
 //show details about team
 
+//When (-) between two teams is clicked
+//show details about goals -> player and minutes
+//before click container is hidden
+//after first, it appears and with each click performed, it actualizes its information appropriately
+
 
 detailedView ={};
 
 //get clicked city's fifa id
-detailedView.cityClicked= function(element,detail,dataBase) {
+detailedView.detailClicked= function(element,detail,dataBase) {
     Ajax.getData(dataBase, (data) => {
-        //if city was clicked
+        
+        //When venue is clicked
+         //show details about its weather
+         //before first click, details container is invisible
+         //after first click it becomes visible
+         //in each click performed it actualizes its information 
         if(detail=="cityDetails") {
             fifaId=element.value;
             var countryName=element.textContent;
             findExactCity(fifaId,countryName,data);
         }
-        //if team was clicked
+
+        //When team is clicked
+        //find which group it belongs to
+        //find team in that group and get info about it
+        //show details about team
         else if(detail=="teamDetails") {
             //store group of the team that is clicked for further loop
             var groupOfTargetTeam;
@@ -37,7 +51,78 @@ detailedView.cityClicked= function(element,detail,dataBase) {
                   findExactGroup(groupOfTargetTeam,data,element);
             });   
         }
+
+        //When (-) between two teams is clicked
+        //show details about goals -> player and minutes
+        //before click container is hidden
+        //after first, it appears and with each click performed, it actualizes its information appropriately
+        else if(detail=="gameDetails") {
+            gameId=element.value;
+            var match=null;
+
+            for(var i=0;i<data.length;i++) {
+                if(gameId==data[i].fifa_id) {
+                   match=data[i];
+                }
+            } showGoals(match);
+         } 
   });   
+}
+
+function goalsConstructor(player,time) {
+this.player=player;
+this.time=time;
+}
+
+function showGoals(match) {
+    document.getElementsByClassName("goal-details")[0].style="display:inline";
+    var homeTeamGoals = [];
+    var awayTeamGoals =[];
+    var homeTeamContainer=document.getElementById("home-team-goal-details");
+    var awayTeamContainer=document.getElementById("away-team-goal-details");
+    homeTeamContainer.innerHTML="";
+    awayTeamContainer.innerHTML="";
+
+    //get goals, send both arrays -> if goal-own, save goal to other team
+    getGoals(match.home_team_events,homeTeamGoals,awayTeamGoals);
+    getGoals(match.away_team_events,awayTeamGoals,homeTeamGoals);
+
+    if(homeTeamGoals.length>0) {
+       fillGoals(homeTeamGoals,homeTeamContainer);
+    }
+    if(awayTeamGoals.length>0) {
+        fillGoals(awayTeamGoals,awayTeamContainer);
+    }
+
+
+} 
+
+function fillGoals(goals,container) { 
+
+    //create and append as much elements as array contains
+    for(var j=0;j<goals.length;j++) {
+        var newElement = document.createElement("P");
+        container.appendChild(newElement);
+    
+        //then fill those elements with data
+        container.childNodes[j].textContent=goals[j].player+" "+goals[j].time;
+        }
+}
+
+function getGoals(match,team,otherTeam) {
+    var newEvent;
+    for(var i=0;i<match.length;i++) {
+        if(match[i].type_of_event=="goal" || 
+        match[i].type_of_event=="goal-penalty") 
+        {
+            newEvent = new goalsConstructor(match[i].player,match[i].time);
+            team.push(newEvent);
+        }
+        else  if(match[i].type_of_event=="goal-own"){
+            newEvent = new goalsConstructor(match[i].player,match[i].time);
+            otherTeam.push(newEvent);
+        } 
+    } 
 }
 
 //loop through groups and find group of team
@@ -69,11 +154,21 @@ function findExactTeam(teams,clickedCountry) {
             games=teams.ordered_teams[i].games_played;
             points=teams.ordered_teams[i].points;
         }
-    }    showTeamDetails(wins,draws,losses,group,games,points);
+    }    showTeamDetails(wins,draws,losses,group,games,points,clickedCountry);
 }
 
-function showTeamDetails(w,d,l,gr,ga,p) {
+function showTeamDetails(w,d,l,gr,ga,p,c) {
     //to do
+    document.getElementsByClassName("team-details")[0].style="display:inline;"
+
+    setInnerHtml("team-name-detail",c);
+    setInnerHtml("team-group-detail",gr);
+    setInnerHtml("team-points-detail",p);
+    setInnerHtml("team-wins-detail",w);
+    setInnerHtml("team-draws-detail",d);
+    setInnerHtml("team-losses-detail",l);
+    setInnerHtml("team-games-detail",ga);
+
 }
 
 //loop through all venues and find exact one
