@@ -19,6 +19,10 @@ detailedView ={};
 
 //get clicked city's fifa id
 detailedView.detailClicked= function(element,detail,dataBase) {
+
+    //variable for history storage
+    var detailElement;
+
     Ajax.getData(dataBase, (data) => {
         
         //When venue is clicked
@@ -30,6 +34,8 @@ detailedView.detailClicked= function(element,detail,dataBase) {
             fifaId=element.value;
             var countryName=element.textContent;
             findExactCity(fifaId,countryName,data);
+
+            detailElement = new localHistory.detailConstructor(element.textContent,detail); 
         }
 
         //When team is clicked
@@ -49,7 +55,8 @@ detailedView.detailClicked= function(element,detail,dataBase) {
                   } 
                   //when group of team is found 
                   findExactGroup(groupOfTargetTeam,data,element);
-            });   
+            });
+            detailElement = new localHistory.detailConstructor(element.textContent,detail);  
         }
 
         //When (-) between two teams is clicked
@@ -64,9 +71,15 @@ detailedView.detailClicked= function(element,detail,dataBase) {
                 if(gameId==data[i].fifa_id) {
                    match=data[i];
                 }
-            } showGoals(match);
-         } 
+            } showGoals(match); detailElement = new localHistory.detailConstructor(element,detail); 
+         }  storeData(detailElement);  
   });   
+}
+
+//store data about event
+function storeData (element) {
+    localHistory.history.push(element);
+    localHistory.saveHistory();
 }
 
 function goalsConstructor(player,time) {

@@ -102,3 +102,10 @@
     font-size:20px;
 color:green;
 }
+
+#history-link {
+    margin-left:50%;
+    font-size:20px;
+    color: black;;
+    background-color:red;
+}

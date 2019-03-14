@@ -26,6 +26,11 @@ function getPlayers(data) {
     var topOrSub = document.querySelector('input[name="topsub"]:checked');
     var chosenTopOrSub = topOrSub ? topOrSub.value : null;
 
+    //store info of search to history
+    var search = new localHistory.searchConstructor(countryName,chosenPosition,chosenTopOrSub);
+    localHistory.history.push(search);
+    localHistory.saveHistory();
+
     searchAmongstAll(countryName,chosenPosition,chosenTopOrSub,data);
 
    //reset search-box after each submit
