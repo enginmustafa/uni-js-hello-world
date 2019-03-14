@@ -78,8 +78,7 @@ detailedView.detailClicked= function(element,detail,dataBase) {
 
 //store data about event
 function storeData (element) {
-    localHistory.history.push(element);
-    localHistory.saveHistory();
+    localHistory.saveHistory(element);
 }
 
 function goalsConstructor(player,time) {

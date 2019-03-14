@@ -28,8 +28,7 @@ function getPlayers(data) {
 
     //store info of search to history
     var search = new localHistory.searchConstructor(countryName,chosenPosition,chosenTopOrSub);
-    localHistory.history.push(search);
-    localHistory.saveHistory();
+    localHistory.saveHistory(search);
 
     searchAmongstAll(countryName,chosenPosition,chosenTopOrSub,data);
 
